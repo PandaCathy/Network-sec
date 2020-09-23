@@ -1,0 +1,49 @@
+from scapy.all import *
+
+#This will ask the user if they are loading in from a file using live traffic
+readPcap = raw_input("Are you loading in from a pcap file?\nEnter (Y) for Yes OR (N) for No: ")
+count = 0
+#If the user enters Y then it will load the packets in from the file and analysis the information
+if(readPcap == 'Y'):
+	#This will get the filename from the user
+	getpcap = raw_input("Please enter the file name with the .pcap extension: ")
+	# create list of packets by reading in a pcap file
+	packets = rdpcap(getpcap)
+	#This will loop through the packet 
+	for packet in packets:
+		# TCP SYN packet
+		if(TCP in packet and packet[TCP].flags & 2):  
+			#counter will add 1
+			count += 1
+		#Check if there is syn ack received
+		if(TCP in packet and packet[TCP].flags & 12):
+			#count will reduce 1
+			count -= 1
+		#If there is 100 or more SYN request
+		if(count >= 100):
+			#Print the alert
+			print("Alert, detect syn flood attack.")
+			#Print attacker IP address and attacker port number
+			print(packet[IP].src , packet[IP].sport)
+
+#If the user enters N then it will listen for the network traffic	
+if(readPcap =='N'):
+	while(1):
+		#This will sniff the traffic on the eth1 and print out 25 packets
+		packets = sniff(iface="eth1", count=25)
+		#This will loop through the packet 
+		for packet in packets:
+			# TCP SYN packet
+			if(TCP in packet and packet[TCP].flags & 2):  
+				#counter will add 1
+				count += 1
+			#Check if there is syn ack received
+			if(TCP in packet and packet[TCP].flags & 12):
+				#count will reduce 1
+				count -= 1
+			#If there is 100 or more SYN request
+			if(count >= 100):
+				#Print the alert
+				print("Alert, detect syn flood attack.")
+				#Print attacker IP address and attacker port number
+				print(packet[IP].src , packet[IP].sport)
