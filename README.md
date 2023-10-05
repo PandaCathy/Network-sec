@@ -1,7 +1,5 @@
-# CSCI-4970-Network-sec
-CSCI 4970 Network security (python)
-
-These are my works for college. 
+# Network-sec
+Network security (python)
 
 **Please do not use my example for your work or your company work.**
 
